@@ -1,0 +1,295 @@
+//--------------------------------------------------------------------------------
+//
+// CrowdStrike, Inc. Copyright (c) 2014.  All rights reserved.
+//
+// Written by Robin Keir. Sr. Research Engineer, CrowdStrike.
+//
+//--------------------------------------------------------------------------------
+//
+// Example config file for use with CrowdResponse tool.
+//
+// Example usage: CrowdResponse -v -i config.txt -o out.xml
+//
+// Copyright (c) 2015. CrowdStrike, Inc.
+//
+// PLEASE TEST THIS CONFIG FILE IN A TEST ENVIRONMENT BEFORE DEPLOYING TO
+// PRODUCTION SYSTEMS
+//
+//--------------------------------------------------------------------------------
+//
+// Main options
+//
+// This is just an example.
+//
+// Uncomment the @main line below to activate the main application parameters
+// instead of having to supply them first on the command line. Note that you can't
+// supply main option -i (path to config file) here in the config file since that
+// could lead to recursive file inclusion.
+//
+//  -c             Use low CPU priority (idle) to lessen load on the system
+//  -e             Indent output XML for readability. Default Off
+//  -f <name>      HTTP form item value name for -u. Default is file from -s
+//  -i <file>      Read configuration from file
+//  -k             Keep the output XML/CAB file when -x is used
+//  -n <name>      HTTP form item name for -u. Default is "filename"
+//  -o <file>      Write output to specified file (overwrite)
+//  -t             Strict SSL certificate adherence. Default is ignore bad certs
+//  -u <url>       Posts output file (-o) to HTTP service specified by URL
+//  -v             Verbose output
+//  -x             Self destruct. Delete this EXE and output file when app exits
+//  -z             Compress output to a CAB archive and delete original XML
+//
+// In addition to regular system environment variables the naming of the output
+// file used with -o and the input configuration file used with -i also
+// understands the following:
+//
+//  %ad%    The application's directory path (includes trailing back-slash)
+//  %ip%    Primary IPv4 IP address
+//  %nm%    NetBIOS computer name
+//  %tm%    Current UTC date/time
+//  %ve%    Application product version
+
+//@main -v -o "%ip%,%nm%.xml"
+
+//--------------------------------------------------------------------------------
+//
+// Directory listing
+//
+//  -c            - Verify and display digital signature information
+//  -e <filter>   - Path exclusion regex filter pattern
+//  -f <mask>     - File name mask. Default is "*.*"
+//  -h            - Do SHA256 hashes
+//  -i <filter>   - Path inclusion regex filter pattern
+//  -m            - Do MD5 hashes
+//  -p <depth>    - Recursion depth (0 = top level only, 1 = 1 level down etc)
+//  -q            - Perform "quick" hash of only the 1st 512 bytes of the file
+//  -r            - Display application resource information
+//  -s            - Recursive listing
+//  -t            - Display file create, modified and accessed times
+//  -x            - Only process Windows executable (PE) files
+//  -z <size>     - Don't hash files greater than this size in megabytes
+//  <dir>         - Directory to start listing from
+
+//@dirlist "%ProgramFiles%" -c -h -m -r -s -t -z 100 -i "\.(exe|dll)$"
+//@dirlist "%ProgramFiles(x86)%" -c -h -m -r -s -t -z 100 -i "\.(exe|dll)$"
+//@dirlist "%windir%" -c -h -m -r -t -z 100 -i "\.(exe|dll|sys)$"
+//@dirlist "%windir%\system32" -c -h -m -r -s -t -p 2 -z 100 -i "\.(exe|dll|sys)$"
+//@dirlist "%systemdrive%" -c -h -m -r -s -t -z 100 -i "\\temp.*\.(exe|dll)$"
+//@dirlist "%systemdrive%\users\" -c -h -m -r -s -t -z 100 -i "\\downloads\\.*\.(exe|dll)$"
+//@dirlist "%systemdrive%\Documents and Settings\" -c -h -m -r -s -t -z 100 -i "\\downloads\\.*\.(exe|dll)$"
+
+//--------------------------------------------------------------------------------
+//
+// Drivers listing
+//
+// -c Verify digital signature of service modules
+// -h Do SHA256 hashes
+// -m Do MD5 hashes
+// -q Perform "quick" hash of only the 1st 512 bytes of the file
+// -r Display application resource information
+// -t Display file create, modified and accessed times
+// -z <size> Don't hash files greater than this size in megabytes
+
+//@drivers -c -h -m -r -t
+
+//--------------------------------------------------------------------------------
+//
+// Process handles listing
+//
+// -p <PID>      - Process ID to dump from. Default is all processes
+
+//@handles
+
+//--------------------------------------------------------------------------------
+//
+// Malware/hacking
+//
+//  -s            - "Sticky keys" detection
+
+//@mal -s
+
+//--------------------------------------------------------------------------------
+//
+// Extract Windows Prefetch information. Determine directory automatically
+//
+//  -s            - Recursive listing
+//  -t            - Translate \dev\harddiskvolume paths to logical drive path
+//  -v            - Force treating pf files as if from Vista or above OS
+//  -x            - Force treating pf files as if from XP or below OS
+//  <dir>         - Directory to start in. Default "%systemroot%\Prefetch"
+ 
+//@prefetch
+
+//--------------------------------------------------------------------------------
+//
+// List all processes
+//
+// -c            - Verify digital signature of process executable
+// -d            - Obtain process command line
+// -e            - Obtain PE file information for each process executable
+// -h            - Do SHA256 hashes of process executables
+// -i            - Check for process thread injection
+// -m            - Do MD5 hashes of process executables
+// -n            - For -e, don't dump function names for imports and exports
+// -o            - Enumerate loaded modules for each process
+// -q            - Perform "quick" hash of only the 1st 512 bytes of the file
+// -r            - Display application resource information
+// -s            - For -e, use nested format resource information
+// -t            - Display file create, modified and accessed times
+// -v            - Determine and process svchost DLLs. Must be used with -d
+// -x            - For -e, don't dump full resource information
+// -z <size>     - Don't hash files greater than this size in megabytes
+ 
+//@pslist -c -d -e -h -i -m -r -t
+
+//--------------------------------------------------------------------------------
+//
+// Extract strings from the memory of running processes
+//
+// -a            - Only extract ASCII strings
+// -c <n>        - Use built-in character set number
+// -i <regex>    - Only include strings matching regex
+// -k <n>        - XOR every byte read from the file with <n>
+// -m <text>     - Text containing characters that MUST be present in a string
+// -n <n>        - Minimum length of a string (default 4)
+// -p <id>       - Process id to examine. Default is all processes
+// -r <n>        - Ignore strings with 'n' or more repeated characters
+// -u            - Only extract Unicode strings
+// -v            - Show extra details (hex memory offset)
+// -x <n>        - Maximum length of a string (default 1024, max 1024)
+
+//@psstrings
+
+//--------------------------------------------------------------------------------
+//
+// Extract registry key and value information
+//
+//  -d            - Nested output format
+//  -s            - Recursive dump
+//  <reg key>     - Registry key to start dump from
+
+//@regdump "HKLM\SYSTEM\CurrentControlSet\services" -s
+//@regdump "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" -s
+
+//--------------------------------------------------------------------------------
+//
+// Registry files
+//
+// Examines the following registry locations and attempts to determine if any of
+// them reference files.
+//
+// -c            - Verify and display digital signature information
+// -h            - Do SHA256 hashes
+// -m            - Do MD5 hashes
+// -q            - Perform "quick" hash of only the 1st 512 bytes of the file
+// -r            - Display application resource information
+// -s            - Recursive dump
+// -t            - Display file create, modified and accessed times
+// -z <size>     - Don't hash files greater than this size in megabytes
+// <reg key>     - Registry key to start dump from
+
+//@regfile "HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -c -h -m -r -s -t
+//@regfile "HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run" -c -h -m -r -s -t
+//@regfile "HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Image File Execution Options" -c -h -m -r -s -t
+
+//--------------------------------------------------------------------------------
+//
+// App Compat Cache with SHA256 and MD5 hashes
+//
+//  -h            - Do SHA256 hashes
+//  -m            - Do MD5 hashes
+ 
+//@shim -h -m
+
+//--------------------------------------------------------------------------------
+//
+// Superfetch dump
+//
+//  -3            - Treat files in <dir> as if they came from a 32 bit OS
+//  -6            - Treat files in <dir> as if they came from a 64 bit OS
+//  -s            - Recursive listing
+//  -t            - Translate \dev\harddiskvolume paths to logical drive path
+//  <dir>         - Optional directory of Superfetch db files to process
+ 
+//@superfetch
+
+//--------------------------------------------------------------------------------
+//
+// YARA
+//
+//  -a            - Scan active processes memory
+//  -b            - Scan active processes executable files
+//  -c            - Strict SSL cert adherence for -u. Default is ignore bad certs
+//  -d <depth>    - Target path recursion depth
+//                  (0 = top level only, 1 = 1 level down etc)
+//  -e <filter>   - Target file path exclusion regex filter pattern
+//  -f <mask>     - Target file name mask. Default is "*.*"
+//  -h            - Only show positive hits
+//  -i <filter>   - Target file path inclusion regex filter pattern
+//  -m <mask>     - YARA rule file name mask. Default is "*.yar"
+//  -n <filter>   - YARA rule file path inclusion regex filter pattern
+//  -o            - Scan all loaded module files of active processes
+//  -p <pid>      - Single process ID to scan
+//  -r            - Recurse into YARA rules directory
+//  -s            - Recurse into target directories
+//  -t <dir>      - Starting target files directory
+//  -u <url>      - Download and run YARA file from URL
+//  -v            - Enable additional informational output
+//  -x <filter>   - YARA rule file path exclusion regex filter pattern
+//  -y <dir>      - YARA rules directory
+
+// Use built-in (to this config) rules shown below against running process
+// binaries (-b) and memory (-a)
+
+@yara -a -b -o -h
+//@yara -p 4820 -h 
+//@yara -t "%systemdrive%\ProgramFiles" -h -d 2 -s -f *.* -i "\.(exe|dll)$"
+//@yara -t "%systemdrive%\ProgramFiles(x86)" -h -d 2 -s -f *.* -i "\.(exe|dll)$"
+//@yara -t "%windir%" -h -f *.* -i "\.(exe|dll|sys)$"
+//@yara -t "%windir%\system32" -h -d 2 -s -f *.* -i "\.(exe|dll|sys)$"
+//@yara -t "%systemdrive%" -h -s -f *.* -i "\\temp.*\.(exe|dll)$"
+//@yara -t "%systemdrive%" -h -f *.* -i "\.(exe|dll)$"
+//@yara -t "%HOMEPATH%" -h -s -d 3 -f *.* -i "\.(exe|dll)$"
+//@yara -t "%systemdrive%\inetpub" -h -s -f *.* -i "\.(asp|aspx)$"
+
+//--------------------------------------------------------------------------------
+
+
+// ---------- Yara rules ----------
+
+[<SECTION:yara>]
+
+rule Wireshark {
+   meta:
+      description = "Auto-generated rule - file Wireshark.exe"
+      author = "YarGen Rule Generator"
+      reference = "not set"
+      date = "2017-05-08"
+      hash1 = "1bc733a9a8f3fce6d504940a62c444a712598f8b0238bba790aa17ef293ef7d6"
+   strings:
+      $x1 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\cmbuild\\run\\RelWithDebInfo\\Wireshark.pdb" fullword ascii
+      $x2 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1230" fullword ascii
+      $x3 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1531" fullword ascii
+      $x4 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1216" fullword ascii
+      $x5 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1213" fullword ascii
+      $x6 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1219" fullword ascii
+      $x7 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1612" fullword ascii
+      $x8 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1574" fullword ascii
+      $x9 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1624" fullword ascii
+      $x10 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1621" fullword ascii
+      $x11 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1592" fullword ascii
+      $x12 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1645" fullword ascii
+      $x13 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1605" fullword ascii
+      $x14 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1602" fullword ascii
+      $x15 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1608" fullword ascii
+      $x16 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\rpc_service_response_time_dialog.cpp:141" fullword ascii
+      $x17 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1537" fullword ascii
+      $x18 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1172" fullword ascii
+      $x19 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtrm_transport_dialog.cpp:1178" fullword ascii
+      $x20 = "C:\\buildbot\\wireshark\\wireshark-2.2-64\\windows-2012r2-x64\\build\\ui\\qt\\lbm_lbtru_transport_dialog.cpp:1586" fullword ascii
+   condition:
+      ( uint16(0) == 0x5a4d and filesize < 22000KB and ( 1 of ($x*) ) ) or ( all of them )
+}
+
+
+[</SECTION>]
